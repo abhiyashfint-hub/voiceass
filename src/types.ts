@@ -13,7 +13,7 @@ export interface PhoneNumber {
   provider: 'Twilio' | 'Plivo' | 'Telnyx';
   number: string;
   sid?: string;
-  token: string;
+  token?: string;
   inboundAgentId?: string;
   outboundAgentId?: string;
   verified: number; // 0 or 1

@@ -44,15 +44,6 @@ import {
 
 type Tab = 'dashboard' | 'agents' | 'workflow' | 'phone-numbers' | 'knowledge-base' | 'integrations' | 'campaigns';
 
-const chartData = [
-  { name: 'Feb 22', inbound: 0, outbound: 0 },
-  { name: 'Feb 23', inbound: 1, outbound: 2 },
-  { name: 'Feb 24', inbound: 2, outbound: 4 },
-  { name: 'Feb 25', inbound: 5, outbound: 8 },
-  { name: 'Feb 26', inbound: 4, outbound: 7 },
-  { name: 'Feb 27', inbound: 6, outbound: 10 },
-  { name: 'Mar 1', inbound: 3, outbound: 5 },
-];
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
@@ -384,7 +375,7 @@ function DashboardView({ stats, campaigns, onSelectCampaign }: { stats: any, cam
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard title="Total Calls" value={stats?.totalCalls || 0} inbound={stats?.inboundCalls || 0} outbound={stats?.outboundCalls || 0} icon={Phone} />
         <StatCard title="Minute Usage" value={`${stats?.totalMinutes || 0}m`} inbound={`${stats?.inboundMinutes || 0}m`} outbound={`${stats?.outboundMinutes || 0}m`} icon={LayoutDashboard} />
-        <StatCard title="Concurrency" value="1" subtitle="Available Channels" icon={GitBranch} />
+        <StatCard title="Concurrency" value={stats?.concurrency || 0} subtitle="Peak active calls" icon={GitBranch} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -392,7 +383,7 @@ function DashboardView({ stats, campaigns, onSelectCampaign }: { stats: any, cam
           <h3 className="text-lg font-semibold mb-6">Usage Analytics</h3>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData}>
+              <AreaChart data={(stats?.dailyTrend || []).map((d: any) => ({ name: d.day, inbound: d.inbound, outbound: d.outbound }))}>
                 <defs>
                   <linearGradient id="colorInbound" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#7C3AED" stopOpacity={0.1}/>
@@ -928,7 +919,7 @@ function IntegrationsView() {
             description="Sync contacts, automate sales with HubSpot." 
             icon="https://cdn.worldvectorlogo.com/logos/hubspot.svg"
             connected={false}
-            onConnect={() => setShowHubSpot(true)}
+            onConnect={() => { window.location.href = '/api/integrations/hubspot/connect'; }}
           />
           <IntegrationCard 
             name="Custom CRM" 
